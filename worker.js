@@ -4,11 +4,12 @@ export default {
     
     // শুধু আপনার ২টা ডোমেইন Allow - বাকি সব Block
     const ALLOWED_ORIGINS = [
-      "https://ghotimarket.com",
-      "https://www.ghotimarket.com",
-      "https://seller.ghotimarket.com"
-    ];
-
+  "https://ghotimarket.com",
+  "https://www.ghotimarket.com",
+  "https://seller.ghotimarket.com",
+  "https://admin.ghotimarket.com",
+  "https://test.ghotimarket.com"
+];
     const origin = request.headers.get("Origin");
     const isAllowed = ALLOWED_ORIGINS.includes(origin);
 
