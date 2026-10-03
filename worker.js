@@ -37,27 +37,22 @@ export default {
       });
     }
 
-    // 2. ছবি দেখা - ULTRA SECURE - শুধু admin + seller
     const key = url.pathname.slice(1);
     if (!key) return new Response("Ghoti Image Server Running 🎉", { headers: corsHeaders });
 
-    // 🔒 NID Protection - কোনো টোকেন নেই, কোনো ফাঁক নেই
-    const isAdmin = referer.startsWith("https://admin.ghotimarket.com") || origin === "https://admin.ghotimarket.com";
-    const isSeller = referer.startsWith("https://seller.ghotimarket.com") || origin === "https://seller.ghotimarket.com";
-
-    if (!isAdmin && !isSeller) {
-      return new Response("Forbidden: NID Protected - Admin/Seller Only 🔒", { status: 403 });
-    }
-
+    // ✅ Direct Link Preview Allowed - Firebase Rules will protect the URL
     const object = await env.IMAGES.get(key);
     if (!object) return new Response("Not Found", { status: 404 });
+
+    let allowOrigin = origin && UPLOAD_ALLOWED.includes(origin) ? origin : "*";
 
     return new Response(object.body, {
       headers: {
         "Content-Type": object.httpMetadata?.contentType || "application/octet-stream",
-        "Cache-Control": "private, no-store, no-cache",
-        "Access-Control-Allow-Origin": isAdmin ? "https://admin.ghotimarket.com" : "https://seller.ghotimarket.com",
-        "Vary": "Origin, Referer"
+        "Content-Disposition": "inline",
+        "Cache-Control": "public, max-age=31536000",
+        "Access-Control-Allow-Origin": allowOrigin,
+        "Vary": "Origin"
       }
     });
   }
